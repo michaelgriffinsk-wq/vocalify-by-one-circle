@@ -381,6 +381,56 @@
             box-shadow: none;
         }
 
+        /* --- MOBILE RESPONSIVE FIX --- */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow-y: auto; /* Allows vertical scrolling */
+                height: auto;
+            }
+            
+            /* Turn sidebar into a top navigation bar */
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: column;
+                border-right: none;
+                border-bottom: 1px solid var(--path-line);
+                padding: 15px;
+            }
+            
+            .nav-links {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .nav-links li {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            /* Allow the main map to show up */
+            .main-content {
+                overflow-y: visible;
+                min-height: 80vh;
+            }
+            
+            /* Move quests to the bottom */
+            .right-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--path-line);
+            }
+            
+            /* Fix the tuner layout for small screens */
+            .tuner-container {
+                padding: 20px;
+                width: 90%;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -559,3 +609,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
