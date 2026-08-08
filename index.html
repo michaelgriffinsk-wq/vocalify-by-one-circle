@@ -465,40 +465,13 @@
             <p id="modalDesc" style="color: var(--text-muted); margin-bottom: 20px;">Lesson description goes here.</p>
             <div style="font-size: 40px; margin: 20px 0;">🎤</div>
             <p style="font-size: 14px; color: var(--warning);"><i class="fas fa-exclamation-triangle"></i> Requires microphone access</p>
-            <button class="btn-start" onclick="startLesson()">Start Singing</button>
+            <button class="btn-start" onclick="startAudioEngine()">Start Singing</button>
             <button style="background: none; border: none; color: var(--text-muted); margin-top: 15px; cursor: pointer; text-decoration: underline;" onclick="closeModal()">Cancel</button>
         </div>
     </div>
 
-    <script>
-        // Simple JS to handle the modal interaction
-        const modal = document.getElementById('lessonModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDesc = document.getElementById('modalDesc');
-
-        function openLessonModal(title, desc) {
-            modalTitle.innerText = title;
-            modalDesc.innerText = desc;
-            modal.style.display = 'flex';
-        }
-
-        function closeModal() {
-            modal.style.display = 'none';
-        }
-
-        function startLesson() {
-            // This is where we will hook up the Web Audio API pitch detector!
-            alert("Connecting to microphone... (Web Audio API engine will load here)");
-            closeModal();
-        }
-
-        // Close modal if clicked outside
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-    </script>
+    <!-- Link to your external JS file -->
+    <script src="script.js"></script>
 </body>
 </html>
 
