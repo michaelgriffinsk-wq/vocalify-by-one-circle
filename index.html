@@ -213,6 +213,68 @@
             margin: -5px 0;
         }
 
+        /* Tuner UI */
+        .tuner-container {
+            background-color: var(--bg-panel);
+            border: 2px solid var(--path-line);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .note-display {
+            font-size: 80px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .meter-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 15px;
+        }
+
+        .cents-meter {
+            flex: 1;
+            height: 12px;
+            background-color: var(--bg-dark);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cents-target {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .cents-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 12px;
+            background-color: var(--warning);
+            border-radius: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: left 0.1s ease-out, background-color 0.2s;
+            z-index: 2;
+        }
+
         /* Right Panel (Social & Quests) */
         .right-panel {
             width: 300px;
@@ -407,6 +469,29 @@
             </div>
 
         </div>
+
+        <!-- Lesson / Practice View (Hidden by default) -->
+        <div id="lesson-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 40px;">
+            <h2 style="margin-bottom: 30px; color: var(--text-muted);">Sing any note!</h2>
+            
+            <div class="tuner-container">
+                <div class="note-display" id="current-note">--</div>
+                
+                <div class="meter-wrapper">
+                    <span style="font-size: 12px; color: var(--text-muted);">Flat</span>
+                    <div class="cents-meter">
+                        <div class="cents-target"></div>
+                        <div class="cents-indicator" id="cents-indicator"></div>
+                    </div>
+                    <span style="font-size: 12px; color: var(--text-muted);">Sharp</span>
+                </div>
+                
+                <div id="tuning-status" style="margin-top: 20px; font-weight: bold;">Waiting for voice...</div>
+            </div>
+
+            <button class="btn-start" style="width: auto; margin-top: 50px; background-color: var(--path-line); box-shadow: none;" onclick="location.reload()">End Practice</button>
+        </div>
+
     </main>
 
     <!-- Right Panel -->
@@ -474,4 +559,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
