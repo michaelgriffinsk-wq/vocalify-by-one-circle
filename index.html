@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocalist Academy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #121216;
+            --bg-panel: #1e1e24;
+            --primary: #6c5ce7;
+            --primary-hover: #5a4bcf;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --text-main: #f5f6fa;
+            --text-muted: #a4b0be;
+            --path-line: #2f3640;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--path-line);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-links li {
+            padding: 12px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.2s;
+            color: var(--text-muted);
+        }
+
+        .nav-links li:hover, .nav-links li.active {
+            background-color: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Top Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: rgba(18, 18, 22, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--path-line);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .streak { color: #ff7675; }
+        .xp { color: #74b9ff; }
+
+        /* Learning Path */
+        .path-container {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .world-header {
+            width: 100%;
+            background-color: var(--primary);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .world-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .world-desc {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Lesson Nodes */
+        .lesson-node-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson-node {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--bg-panel);
+            border: 4px solid var(--path-line);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.2s;
+        }
+
+        /* Gamified 3D button effect for active node */
+        .lesson-node.active {
+            background-color: var(--success);
+            border-color: #00997a;
+            box-shadow: 0 6px 0 #00997a, 0 10px 20px rgba(0, 184, 148, 0.4);
+            color: white;
+            transform: translateY(-4px);
+        }
+
+        .lesson-node.active:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 #00997a;
+        }
+
+        .lesson-node.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .lesson-title {
+            font-weight: bold;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .active-title {
+            color: var(--text-main);
+        }
+
+        /* Connecting Path Line */
+        .path-connector {
+            width: 8px;
+            height: 50px;
+            background-color: var(--path-line);
+            margin: -5px 0;
+        }
+
+        /* Right Panel (Social & Quests) */
+        .right-panel {
+            width: 300px;
+            background-color: var(--bg-panel);
+            border-left: 1px solid var(--path-line);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .panel-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .quest-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .quest-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--path-line);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--warning);
+            width: 60%;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* Modal overlay for lesson start */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            border: 1px solid var(--path-line);
+        }
+
+        .btn-start {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 0 #00997a;
+            transition: transform 0.1s;
+            width: 100%;
+        }
+
+        .btn-start:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div>
+            <div class="logo">
+                <i class="fas fa-music"></i> Vocalify
+            </div>
+            <ul class="nav-links">
+                <li class="active"><i class="fas fa-map"></i> Learning Path</li>
+                <li><i class="fas fa-microphone-alt"></i> Daily Warm-up</li>
+                <li><i class="fas fa-book-open"></i> Sheet Music</li>
+                <li><i class="fas fa-trophy"></i> Leaderboard</li>
+                <li><i class="fas fa-user"></i> Profile</li>
+            </ul>
+        </div>
+        <div class="nav-links">
+            <li><i class="fas fa-cog"></i> Settings</li>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <h2>Your Journey</h2>
+            <div class="stats">
+                <div class="stat-item streak">
+                    <i class="fas fa-fire"></i> 12
+                </div>
+                <div class="stat-item xp">
+                    <i class="fas fa-gem"></i> 450
+                </div>
+            </div>
+        </header>
+
+        <div class="path-container">
+            
+            <!-- World 1 Header -->
+            <div class="world-header">
+                <div>
+                    <div class="world-title">World 1: The Foundation</div>
+                    <div class="world-desc">Lessons 1 & 2 - Pitch and Rhythm</div>
+                </div>
+                <i class="fas fa-check-circle" style="font-size: 30px; color: rgba(255,255,255,0.5);"></i>
+            </div>
+
+            <!-- Completed Node -->
+            <div class="lesson-node-wrapper">
+                <div class="lesson-node" style="background-color: var(--primary); border-color: var(--primary);">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="lesson-title">Intro to Pitch</div>
+            </div>
+
+            <div class="path-connector" style="background-color: var(--primary);"></div>
+
+            <!-- Active Node (Lesson 1: The Staff) -->
+            <div class="lesson-node-wrapper" style="transform: translateX(-30px);">
+                <div class="lesson-node active" onclick="openLessonModal('Lesson 1: The Staff', 'Match the notes displayed on the treble clef using your microphone.')">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="lesson-title active-title">The Staff</div>
+            </div>
+
+            <div class="path-connector"></div>
+
+            <!-- Locked Node (Lesson 2: Rhythm) -->
+            <div class="lesson-node-wrapper" style="transform: translateX(30px);">
+                <div class="lesson-node locked">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="lesson-title">Rhythm</div>
+            </div>
+
+            <div class="path-connector"></div>
+
+            <!-- World 2 Header -->
+            <div class="world-header" style="background-color: var(--bg-panel); border: 2px solid var(--path-line); box-shadow: none; margin-top: 20px;">
+                <div>
+                    <div class="world-title" style="color: var(--text-muted)">World 2: Ear Training</div>
+                    <div class="world-desc">Lessons 3, 4 & 5 - Intervals</div>
+                </div>
+                <i class="fas fa-lock" style="font-size: 24px; color: var(--text-muted);"></i>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="right-panel">
+        <div class="panel-section">
+            <h3>Daily Quests</h3>
+            
+            <div class="quest-card">
+                <div class="quest-header">
+                    <span>Hit 5 perfect notes</span>
+                    <span>3/5</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="quest-card">
+                <div class="quest-header">
+                    <span>Complete 1 Warm-up</span>
+                    <span>0/1</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%; background-color: var(--success);"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <h3>Friends Streak</h3>
+            
+            <div class="friend-item">
+                <div class="avatar">S</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: bold;">Sarah J.</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Practicing Scales</div>
+                </div>
+                <div class="streak"><i class="fas fa-fire"></i> 45</div>
+            </div>
+
+            <div class="friend-item">
+                <div class="avatar" style="background-color: var(--warning);">M</div>
+                <div style="flex: 1;">
+                    <div style="font-weight: bold;">Mike T.</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Completed World 1</div>
+                </div>
+                <div class="streak"><i class="fas fa-fire"></i> 12</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Lesson Start Modal -->
+    <div class="modal-overlay" id="lessonModal">
+        <div class="modal">
+            <h2 id="modalTitle" style="margin-bottom: 10px;">Lesson Title</h2>
+            <p id="modalDesc" style="color: var(--text-muted); margin-bottom: 20px;">Lesson description goes here.</p>
+            <div style="font-size: 40px; margin: 20px 0;">🎤</div>
+            <p style="font-size: 14px; color: var(--warning);"><i class="fas fa-exclamation-triangle"></i> Requires microphone access</p>
+            <button class="btn-start" onclick="startLesson()">Start Singing</button>
+            <button style="background: none; border: none; color: var(--text-muted); margin-top: 15px; cursor: pointer; text-decoration: underline;" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple JS to handle the modal interaction
+        const modal = document.getElementById('lessonModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+
+        function openLessonModal(title, desc) {
+            modalTitle.innerText = title;
+            modalDesc.innerText = desc;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function startLesson() {
+            // This is where we will hook up the Web Audio API pitch detector!
+            alert("Connecting to microphone... (Web Audio API engine will load here)");
+            closeModal();
+        }
+
+        // Close modal if clicked outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
+
