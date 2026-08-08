@@ -60,9 +60,14 @@ async function startAudioEngine() {
             startBtn.style.transform = "translateY(4px)";
         }
         
-        // Close modal after a brief delay and trigger the pitch detection loop
+        // Close modal after a brief delay and switch to the tuning room view
         setTimeout(() => {
             closeModal();
+            // Hide the learning path and show the lesson/tuner view
+            document.querySelector('.path-container').style.display = 'none';
+            document.getElementById('lesson-view').style.display = 'flex';
+            
+            // Start the listening loop!
             updatePitch(); 
         }, 1500);
         
@@ -141,7 +146,7 @@ function centsOffFromPitch(frequency, note) {
     return Math.floor(1200 * Math.log(frequency / frequencyFromNoteNumber(note)) / Math.log(2));
 }
 
-// 3. The Continuous Listening Loop
+// 3. The Continuous Listening Loop (Updated for UI)
 function updatePitch() {
     // Grab the raw audio data from the analyser
     let buffer = new Float32Array(analyser.fftSize);
@@ -157,10 +162,34 @@ function updatePitch() {
         let octave = Math.floor(note / 12) - 1;
         let cents = centsOffFromPitch(pitchInHz, note);
         
-        // Print it to the browser console so we can see it working
-        console.log(`Singing: ${noteName}${octave} | Frequency: ${Math.round(pitchInHz)}Hz | Cents Off: ${cents}`);
+        // Update large note text in the UI
+        document.getElementById('current-note').innerText = noteName + octave;
+        
+        // Update the meter position (cents range from -50 to +50)
+        // Map -50 to 0% (left), 0 to 50% (center), +50 to 100% (right)
+        let percentage = cents + 50;
+        let indicator = document.getElementById('cents-indicator');
+        let statusText = document.getElementById('tuning-status');
+        
+        indicator.style.left = percentage + '%';
+        
+        // Gamify the color based on accuracy (within 10 cents is considered a "Hit")
+        if (Math.abs(cents) < 10) {
+            statusText.innerText = "Perfect Pitch! 🎯";
+            statusText.style.color = "var(--success)";
+            indicator.style.backgroundColor = "var(--success)";
+        } else if (cents < 0) {
+            statusText.innerText = "Flat (Sing Higher) ⬆️";
+            statusText.style.color = "var(--warning)";
+            indicator.style.backgroundColor = "var(--warning)";
+        } else {
+            statusText.innerText = "Sharp (Sing Lower) ⬇️";
+            statusText.style.color = "var(--warning)";
+            indicator.style.backgroundColor = "var(--warning)";
+        }
     }
     
     // Call this function again on the next animation frame (creating a rapid loop)
     pitchDetectLoop = requestAnimationFrame(updatePitch);
 }
+
