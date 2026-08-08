@@ -1,4 +1,27 @@
-// Global variables for our audio engine
+// --- MODAL UI LOGIC ---
+const modal = document.getElementById('lessonModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalDesc = document.getElementById('modalDesc');
+
+function openLessonModal(title, desc) {
+    modalTitle.innerText = title;
+    modalDesc.innerText = desc;
+    modal.style.display = 'flex';
+}
+
+function closeModal() {
+    modal.style.display = 'none';
+}
+
+// Close modal if clicked outside
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+
+// --- CORE AUDIO ENGINE ---
 let audioContext;
 let analyser;
 let microphone;
@@ -6,11 +29,9 @@ let microphone;
 async function startAudioEngine() {
     try {
         // 1. Initialize the Audio Context
-        // This is the main environment where all audio processing happens
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        // 2. Request Microphone Access
-        // We turn off built-in processing because we want the raw vocal pitch
+        // 2. Request Microphone Access (raw audio, no echo cancellation)
         const stream = await navigator.mediaDevices.getUserMedia({ 
             audio: {
                 echoCancellation: false,
@@ -20,9 +41,8 @@ async function startAudioEngine() {
         });
 
         // 3. Create the Analyser Node
-        // This node extracts time and frequency data from the audio signal
         analyser = audioContext.createAnalyser();
-        analyser.fftSize = 2048; // Higher number = better frequency resolution
+        analyser.fftSize = 2048; 
         
         // 4. Route the microphone into the analyser
         microphone = audioContext.createMediaStreamSource(stream);
@@ -30,15 +50,22 @@ async function startAudioEngine() {
         
         console.log("Audio engine started successfully! The browser is listening.");
         
-        // Change the button appearance so the user knows it worked
+        // Update UI to show success
         const startBtn = document.querySelector('.btn-start');
         if(startBtn) {
             startBtn.innerText = "Microphone Connected!";
-            startBtn.style.backgroundColor = "#2d3436";
+            startBtn.style.backgroundColor = "#00b894"; // success green
+            startBtn.style.boxShadow = "none";
+            startBtn.style.transform = "translateY(4px)";
         }
         
+        // Close modal after a brief delay so the user sees the success message
+        setTimeout(() => {
+            closeModal();
+            // We will trigger the pitch detection loop here in the next step!
+        }, 1500);
+        
     } catch (error) {
-        // Handle denied permissions or missing hardware
         console.error("Error accessing the microphone:", error);
         alert("Vocalify requires microphone access to hear you sing!");
     }
